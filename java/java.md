@@ -129,9 +129,14 @@
   - 고정 소수점 방식으로 숫자를 그냥 저장한후 소수점의 위치를 나타냅니다. 예를 들어 123.01 이 있으면 12301 로 저장후 소수점의 위치 2 를 사용하여 저장합니다.
 
 ### 5. `==` 과 `equals` 의 차이점은 무엇인가요?
-
+- '==' 은 참조 주소ㄱ을 비교하고 'equals' 는 객체의 값 자체를 비교합니다. 따라서 java 에서 == 동일한 메모리의 "위치" 인지 를 판단하고 equals 는 우리가 알고있는 값이 같은지를 비교합니다. 
 - **Object 의 `equals` 메서드는 어떻게 구현되어 있나요?**
-
+  ``` java
+  public boolean equals(Object obj) {
+    return (this == obj);
+  }
+  ```
+  기본적으로는 주소를 비교합니다. 재정의 하지 않는다면 == 과 동일하게 작동합니다.
 - **아래의 코드는 어떤 결과가 나올까요? 이유를 설명해보세요.**
 
   ```java
@@ -139,16 +144,36 @@
   Integer b = new Integer(3);
   System.out.println(a==b);
   ```
+  결과는 false 입니다. 새로운 객체를 생성하는데 a와 b 는 서로 다를 주소를 가르키기 때문입니다.
 
 - **그럼, `equals()` 와 `hashCode()` 에 대해 설명해 주세요.**
-
+ - equlas() 는 논리적 동등한지를 비교하고 hasCode는 해시테이블 기반의 컬렉션에서 사용할수 있도록 고유한 정수값을 반환 합니다. 같은 객체라고 판단되는 두 객체는 반드시 같은 hashCode 값을 가집니다 그러나 다른 객체가 같은 hashCode 를 가질수는 있습니다. (해시테이블 특성상)
 - **`hashCode()` 의 용도는 무엇인가요?**
+  - 해시기반 컬랙션에서 객체를 빠르게 검색하거나 저장하기 위해 사용합니다. 해시테이블에서 객체를 버킷에 저장할때 hashCode를 사용하여 객체의 위치를 결정합니다.
 
 - **본인이 `hashCode()` 를 정의해야 한다면, 어떤 점을 염두에 두고 구현할 것 같으세요?**
-
+  - equals와의 일관성: equals()가 true를 반환하는 두 객체는 반드시 같은 hashCode를 반환해야 합니다.
+  - 충돌 최소화: 가능한 서로 다른 객체는 다른 hashCode를 가지도록 설계해야 합니다.
+  - 불변성: 객체가 변경되지 않는 한 동일한 hashCode 값을 반환해야 합니다.
+  - 효율성: 해시 테이블에서의 성능을 위해 분산도가 높은 값을 생성해야 합니다.
 - **그렇다면 `equals()` 를 재정의 해야 할 때, 어떤 점을 염두에 두어야 하는지 설명해 주세요.**
-
+  - 대칭성: a.equals(b)가 true이면 b.equals(a)도 true여야 합니다.
+  - 반사성: a.equals(a)는 항상 true여야 합니다.
+  - 추이 성: a.equals(b)가 true이고, b.equals(c)가 true이면, a.equals(c)도 true여야 합니다.
+  - 일관성: equals는 비교 대상의 상태가 변하지 않는 한 항상 동일한 결과를 반환해야 합니다.
+  - null 비교: 어떤 객체와도 null.equals(x)는 false를 반환해야 합니다.
 - **만약 `equals()` 와 `hashCode()` 를 둘 다 재정의 했을 때, 객체의 주소값을 비교해야 한다는 상황이 온다면 어떻게 하나요?**
+  - 객체의 주소값을 직접 비교하고 싶을 경우, System.identityHashCode(obj)와 == 연산자를 사용합니다
+    - System.identityHashCode(obj)는 객체의 메모리 주소 기반 해시코드를 반환합니다.
+    - 직접 == 연산자를 사용하여 참조값을 비교할 수도 있습니다.
+  ``` java
+    Object obj1 = new Object();
+    Object obj2 = new Object();
+
+    System.out.println(obj1 == obj2); // 참조 비교
+    System.out.println(System.identityHashCode(obj1) == System.identityHashCode(obj2)); // 해시코드 비교
+  ```
+
 
 ### 6. 다형성은 무엇인가요? 또 언제 활용할 수 있을까요?
 
